@@ -1,6 +1,5 @@
 package cn.bjtu.stms.aop;
 
-import cn.bjtu.stms.model.protocol.PaperCheckException;
 import cn.bjtu.stms.model.protocol.ResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,19 +36,6 @@ public class GlobalExceptionHandle {
     public ResponseData handleException(HttpServletRequest req, Exception e) {
         printExceptionLog(req, e);
         return ResponseData.response(599, "服务异常", e.getMessage());
-    }
-
-    /**
-     * 自定义的异常处理
-     *
-     * @param e
-     * @return
-     */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({PaperCheckException.class})
-    public ResponseData serviceExceptionHandler(HttpServletRequest req, PaperCheckException e) {
-        printExceptionLog(req, e);
-        return ResponseData.response(e.getCode(), e.getMsg());
     }
 
     /**

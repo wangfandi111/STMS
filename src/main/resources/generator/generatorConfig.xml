@@ -19,7 +19,7 @@
                         userId="root"
                         password="password">
         </jdbcConnection>
-        
+
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
@@ -27,25 +27,25 @@
         <javaModelGenerator targetPackage="cn.bjtu.stms.model"
                             targetProject="src/main/java"/>
 
-        <sqlMapGenerator targetPackage="cn.bjtu.stms.dao"
-                         targetProject="src/main/java"/>
+        <!--<sqlMapGenerator targetPackage="mapper"
+                         targetProject="src/main/resources/mybatis"/>-->
 
-		<javaClientGenerator targetPackage="cn.bjtu.stms.mapper"
-                            targetProject="src/main/java"
-                            type="ANNOTATEDMAPPER"/>
+        <javaClientGenerator targetPackage="cn.bjtu.stms.mapper"
+                             targetProject="src/main/java"
+                             type="ANNOTATEDMAPPER"/>
 
-<!--        <table tableName="user" domainObjectName="user" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="True" selectByExampleQueryId="false" >
-           <generatedKey column="id" sqlStatement="JDBC"/>
-       </table> -->
-       
-       <table tableName="user_info">
-           <generatedKey column="id" sqlStatement="JDBC"/>
-       </table>
-       <table tableName="stu_task">
-           <generatedKey column="id" sqlStatement="JDBC"/>
-       </table>
-       <table tableName="pub_task">
-           <generatedKey column="id" sqlStatement="JDBC"/>
-       </table>
+        <!--        <table tableName="user" domainObjectName="user" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="True" selectByExampleQueryId="false" >
+                   <generatedKey column="id" sqlStatement="JDBC"/>
+               </table> -->
+
+        <table tableName="user_info">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
+        <table tableName="stu_task">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
+        <table tableName="pub_task">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
     </context>
 </generatorConfiguration>

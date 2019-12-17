@@ -42,7 +42,7 @@ public class Pager<T> {
     }
 
     public static Integer getOffset(Integer pageNo, Integer pageSize) {
-        return (pageNo != null && pageSize != null) ? (pageNo - 1) * pageSize : null;
+        return (pageNo != null && pageSize != null) ? (getValidPageNo(pageNo, 1) - 1) * getValidPageSize(pageSize, 10) : null;
     }
 
     public static int getValidPageNo(Integer pageNo, Integer defaultPageNo) {

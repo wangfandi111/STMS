@@ -5,7 +5,8 @@ import org.apache.ibatis.annotations.Select;
 import tk.mybatis.mapper.common.Mapper;
 
 public interface UserInfoMapper extends Mapper<UserInfo> {
-	public UserInfo selectByUserName(String userName);
-	public UserInfo selectByUserId(Integer userId);
-	public List<UserInfo> selectByRole(Integer userRole);
+
+    @Select("select * from user_info where user_jobid = #{userJobid}")
+    UserInfo getUserInfoByUserJobid(String userJobid);
+
 }

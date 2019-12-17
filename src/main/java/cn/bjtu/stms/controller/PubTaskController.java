@@ -24,7 +24,7 @@ public class PubTaskController {
     private TaskService taskService;
 
     @ApiOperation(value = "发布任务", notes = "老师发布任务")
-    @ApiImplicitParam(name = "jsonNode", value = "任务信息，例子：{\"taskName\":\"任务名称\",\"taskContent\":\"任务内容\"}",
+    @ApiImplicitParam(name = "jsonNode", value = "任务信息，例：{'taskName':'任务名称','taskContent':'任务内容'}",
             required = true, dataType = "string", paramType = "body")
     @PostMapping(value = "/task/pub")
     public ResponseData pubTask(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
@@ -33,6 +33,29 @@ public class PubTaskController {
         HttpSession session = request.getSession(true);
         UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
         return taskService.pubTask(userInfo, taskName, taskContent);
+    }
+
+    @ApiOperation(value = "查询某一任务", notes = "老师查询某一任务")
+    @ApiImplicitParam(name = "jsonNode", value = "任务id，例：{'taskId':2}",
+            required = true, dataType = "string", paramType = "body")
+    @PostMapping(value = "/task/search")
+    public ResponseData getTaskById(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
+        Integer taskId = jsonNode.get("taskId").intValue();
+        HttpSession session = request.getSession(true);
+        UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
+        return taskService.getTaskById(userInfo, taskId);
+    }
+
+    @ApiOperation(value = "查询老师任务列表", notes = "查询老师任务列表")
+    @ApiImplicitParam(name = "jsonNode", value = "任务id，例：{'pageNo':1,'pageSize':10}",
+            required = true, dataType = "string", paramType = "body")
+    @PostMapping(value = "/task/all")
+    public ResponseData getTaskByTeacher(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
+        Integer pageNo = jsonNode.get("pageNo").intValue();
+        Integer pageSize = jsonNode.get("pageSize").intValue();
+        HttpSession session = request.getSession(true);
+        UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
+        return taskService.getTaskByTeacher(userInfo, pageNo, pageSize);
     }
 
 }
