@@ -1,0 +1,51 @@
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+            <property name="caseSensitive" value="true"/>
+            <property name="lombok" value="Getter,Setter,ToString,Accessors"/>
+        </plugin>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/student?serverTimezone=UTC&amp;nullCatalogMeansCurrent=true&amp;zeroDateTimeBehavior=round"
+                        userId="root"
+                        password="password">
+        </jdbcConnection>
+        
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="cn.bjtu.stms.model"
+                            targetProject="src/main/java"/>
+
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="src/main/resources/mybatis"/>
+
+       <javaClientGenerator targetPackage="cn.bjtu.stms.mapper"
+                            targetProject="src/main/java"
+                            type="ANNOTATEDMAPPER"/>
+
+<!--        <table tableName="user" domainObjectName="user" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="True" selectByExampleQueryId="false" >
+           <generatedKey column="id" sqlStatement="JDBC"/>
+       </table> -->
+       
+       <table tableName="user_info">
+           <generatedKey column="id" sqlStatement="JDBC"/>
+       </table>
+       <table tableName="stu_task">
+           <generatedKey column="id" sqlStatement="JDBC"/>
+       </table>
+       <table tableName="pub_task">
+           <generatedKey column="id" sqlStatement="JDBC"/>
+       </table>
+    </context>
+</generatorConfiguration>

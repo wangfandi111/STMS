@@ -5,21 +5,49 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.text.SimpleDateFormat;
 
 @Configuration
+@EnableSwagger2
 public class WebAppConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private LoginInterceptor loginInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/*").
-                excludePathPatterns("/health", "/test/**");
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**")
+                .excludePathPatterns("/health", "/user/**")
+                .excludePathPatterns("/swagger-ui.html")
+                .excludePathPatterns("/configuration/ui")
+                .excludePathPatterns("/swagger-resources")
+                .excludePathPatterns("/configuration/security")
+                .excludePathPatterns("/v2/api-docs")
+                .excludePathPatterns("/error")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/**/favicon.ico");
     }
+
+    /**
+     * 通过 createRestApi函数来构建一个DocketBean
+     * 函数名,可以随意命名,喜欢什么命名就什么命名
+     */
+    @Bean
+    public Docket swaggerSpringMvcPlugin() {
+        return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class)).build();
+    }
+
 
     @Bean
     public ObjectMapper getObjectMapper() {

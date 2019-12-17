@@ -5,8 +5,8 @@ import java.util.Map;
 
 public enum UserRoleEnum {
 
-    SUPER_ADMIN(0, "老师"),
-    SCHOOL_ADMIN(1, "学生");
+    TEACHER(0, "老师"),
+    STUDENT(1, "学生");
 
     private Integer code;
     private String content;

@@ -1,8 +1,11 @@
 package cn.bjtu.stms.model;
 
+import lombok.Data;
+
 import java.util.Date;
 import javax.persistence.*;
 
+@Data
 @Table(name = "stu_task")
 public class StuTask {
     @Id
@@ -24,88 +27,4 @@ public class StuTask {
 
     @Column(name = "remark_text")
     private String remarkText;
-
-    /**
-     * @return task_id
-     */
-    public Integer getTaskId() {
-        return taskId;
-    }
-
-    /**
-     * @param taskId
-     */
-    public void setTaskId(Integer taskId) {
-        this.taskId = taskId;
-    }
-
-    /**
-     * @return stu_id
-     */
-    public Integer getStuId() {
-        return stuId;
-    }
-
-    /**
-     * @param stuId
-     */
-    public void setStuId(Integer stuId) {
-        this.stuId = stuId;
-    }
-
-    /**
-     * @return has_submitted
-     */
-    public Byte getHasSubmitted() {
-        return hasSubmitted;
-    }
-
-    /**
-     * @param hasSubmitted
-     */
-    public void setHasSubmitted(Byte hasSubmitted) {
-        this.hasSubmitted = hasSubmitted;
-    }
-
-    /**
-     * @return submit_time
-     */
-    public Date getSubmitTime() {
-        return submitTime;
-    }
-
-    /**
-     * @param submitTime
-     */
-    public void setSubmitTime(Date submitTime) {
-        this.submitTime = submitTime;
-    }
-
-    /**
-     * @return submit_text
-     */
-    public String getSubmitText() {
-        return submitText;
-    }
-
-    /**
-     * @param submitText
-     */
-    public void setSubmitText(String submitText) {
-        this.submitText = submitText;
-    }
-
-    /**
-     * @return remark_text
-     */
-    public String getRemarkText() {
-        return remarkText;
-    }
-
-    /**
-     * @param remarkText
-     */
-    public void setRemarkText(String remarkText) {
-        this.remarkText = remarkText;
-    }
 }
