@@ -31,8 +31,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         PrintWriter writer = null;
         try {
+            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.setHeader("Content-type", "application/json;charset=UTF-8");
             writer = httpServletResponse.getWriter();
-            writer.print(ResponseData.response(CodeEnum.LOGIN_NEED));
+            writer.print(ResponseData.response(CodeEnum.LOGIN_NEED).toString());
         } catch (IOException e) {
             logger.error("response error",e);
         } finally {

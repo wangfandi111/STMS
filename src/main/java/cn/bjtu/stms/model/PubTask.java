@@ -27,6 +27,11 @@ public class PubTask {
     @Column(name = "task_status")
     private Integer taskStatus;
 
+    private String taskStatusDes;
+
     @Column(name = "teacher_id")
     private Integer teacherId;
+
+    @Column(name = "delete_tag")
+    private Integer deleteTag;
 }

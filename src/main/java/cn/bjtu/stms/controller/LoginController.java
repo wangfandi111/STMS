@@ -27,8 +27,8 @@ public class LoginController {
             required = true, dataType = "string", paramType = "body")
     @PostMapping(value = "login")
     public ResponseData login(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
-        String loginStr = jsonNode.get("loginStr").textValue();
-        String password = jsonNode.get("password").textValue();
+        String loginStr = jsonNode.hasNonNull("loginStr") ? jsonNode.get("loginStr").textValue() : "";
+        String password = jsonNode.hasNonNull("password") ? jsonNode.get("password").textValue() : "";
         HttpSession session = request.getSession(true);
         return userService.login(loginStr, password, session);
     }
@@ -45,6 +45,20 @@ public class LoginController {
             e.printStackTrace();
             return ResponseData.fail("注册失败！");
         }
+    }
+
+    @ApiOperation(value = "注销", notes = "注销")
+    @PostMapping(value = "logout")
+    public ResponseData layOut(@Valid @RequestBody UserInfo userInfo, HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
+        session.removeAttribute("userInfo");
+        return ResponseData.success("注销！");
+    }
+
+    @ApiOperation(value = "学生列表", notes = "学生列表")
+    @PostMapping(value = "students")
+    public ResponseData getStudentList() {
+        return userService.getStudentList();
     }
 
 

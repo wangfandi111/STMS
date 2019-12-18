@@ -1,7 +1,9 @@
 package cn.bjtu.stms.service;
 
+import cn.bjtu.stms.constants.UserRoleEnum;
 import cn.bjtu.stms.mapper.UserInfoMapper;
 import cn.bjtu.stms.model.UserInfo;
+import cn.bjtu.stms.model.protocol.Pager;
 import cn.bjtu.stms.model.protocol.ResponseData;
 import cn.bjtu.stms.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -21,25 +24,29 @@ public class UserService {
         UserInfo userInfo = new UserInfo();
         if (StringUtil.isPositiveNumeric(loginStr)) {
             userInfo.setUserJobid(loginStr);
-        } else {
-            userInfo.setUserName(loginStr);
-        }
-        userInfo = userInfoMapper.selectOne(userInfo);
-        if (userInfo != null && userInfo.getUserPassword().equals(password)) {
-            session.setAttribute("userInfo", userInfo);
-            return ResponseData.success("登录成功！", userInfo);
+            userInfo = userInfoMapper.selectOne(userInfo);
+            if (userInfo != null && userInfo.getUserPassword().equals(password)) {
+                session.setAttribute("userInfo", userInfo);
+                return ResponseData.success("登录成功！", userInfo);
+            }
         }
         return ResponseData.fail("请输入正确的用户名或密码！");
     }
 
     public ResponseData register(UserInfo userInfo) throws Exception {
-        if (userInfo != null && StringUtil.isPositiveNumeric(userInfo.getUserJobid()) ) {
+        if (userInfo != null && StringUtil.isPositiveNumeric(userInfo.getUserJobid())) {
             userInfo.setUserId(null);
             int id = userInfoMapper.insertSelective(userInfo);
             return id > 0 ? ResponseData.success("注册成功") : ResponseData.failParamaters("注册失败！");
         } else {
             return ResponseData.failParamaters();
         }
+    }
+
+    public ResponseData getStudentList() {
+        List<UserInfo> userInfoList = userInfoMapper.getUserInfoList(UserRoleEnum.STUDENT.getCode());
+        Pager data = userInfoList != null ? new Pager(userInfoList, 1, userInfoList.size(), userInfoList.size()) : new Pager();
+        return ResponseData.success(data);
     }
 
 }

@@ -1,5 +1,7 @@
 package cn.bjtu.stms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,6 +20,7 @@ public class UserInfo {
     private String userJobid;
 
     @Column(name = "user_password")
+    @JsonIgnore
     private String userPassword;
 
     @Column(name = "user_role")

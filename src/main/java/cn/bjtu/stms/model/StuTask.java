@@ -17,7 +17,9 @@ public class StuTask {
     private Integer stuId;
 
     @Column(name = "has_submitted")
-    private Byte hasSubmitted;
+    private Integer hasSubmitted;
+
+    private String hasSubmittedDes;
 
     @Column(name = "submit_time")
     private Date submitTime;
