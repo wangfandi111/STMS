@@ -1,5 +1,6 @@
 package cn.bjtu.stms.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,6 +34,7 @@ public class PubTask {
     private Integer teacherId;
 
     @Column(name = "remark_text")
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String remarkText;
 
     @Column(name = "delete_tag")

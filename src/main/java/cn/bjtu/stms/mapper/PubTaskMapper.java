@@ -20,12 +20,12 @@ public interface PubTaskMapper extends Mapper<PubTask> {
     Integer countPubTasksByTeacherId(@Param("teacherId") Integer teacherId);
 
     @Select("select * from pub_task where delete_tag = 0 and task_id in " +
-            "(select distinct(task_id)) from stu_task where stu_id = #{studentId} ) " +
+            "(select distinct(task_id) from stu_task where stu_id = #{studentId} ) " +
             "order by create_time desc limit #{limit} offset #{offset}")
     List<PubTask> getPubTaskListByStudentId(@Param("studentId") Integer studentId, @Param("limit") Integer limit, @Param("offset") Integer offset);
 
     @Select("select count(distinct(task_id)) from pub_task where delete_tag = 0 and task_id in " +
-            "(select distinct(task_id)) from stu_task where stu_id = #{studentId} )")
+            "(select distinct(task_id) from stu_task where stu_id = #{studentId} )")
     Integer countPubTasksByStudentId(@Param("studentId") Integer studentId);
 
     @Update("update pub_task set delete_tag = 1 where task_id = #{taskId} and teacher_id = #{teacherId} and task_status = #{taskStatus}")

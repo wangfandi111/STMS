@@ -35,7 +35,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler({Exception.class})
     public ResponseData handleException(HttpServletRequest req, Exception e) {
         printExceptionLog(req, e);
-        return ResponseData.response(599, "服务异常", e.getMessage());
+        return ResponseData.response(599, "服务异常", "");
     }
 
     /**
