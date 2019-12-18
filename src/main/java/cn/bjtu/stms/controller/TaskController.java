@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +25,14 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @ApiOperation(value = "查询任务统计数据", notes = "查询任务统计数据")
+    @PostMapping(value = "/statistics")
+    public ResponseData getTaskStatistics(HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
+        UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
+        return taskService.getTaskStatistics(userInfo);
+    }
 
     @ApiOperation(value = "发布任务", notes = "老师发布任务")
     @ApiImplicitParam(name = "jsonNode", value = "任务信息，例：{'taskName':'任务名称','taskContent':'任务内容'}",

@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface StuTaskMapper extends Mapper<StuTask> {
 
+    @Select("select count(distinct(task_id)) from stu_task where stu_id = #{studentId} and has_submitted = #{submitStatus}")
+    Integer countStuTasksByTaskStatus(@Param("studentId") Integer studentId, @Param("submitStatus") Integer submitStatus);
+
     @Select("select * from stu_task where task_id = #{taskId} and stu_id = #{studentId}")
     StuTask getStuTask(@Param("taskId") Integer taskId, @Param("studentId") Integer studentId);
 

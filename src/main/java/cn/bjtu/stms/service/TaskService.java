@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -27,6 +29,27 @@ public class TaskService {
 
     @Resource
     private StuTaskMapper stuTaskMapper;
+
+    public ResponseData getTaskStatistics(UserInfo userInfo) {
+        if (userInfo == null)
+            return ResponseData.fail("用户信息错误！");
+
+        Map<String, Integer> resultMap = new HashMap();
+        if (userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode())) {
+            int createTaskNum = pubTaskMapper.countPubTasksByTaskStatus(userInfo.getUserId(), TaskStatusEnum.CREATE.getCode());
+            int doingTaskNum = pubTaskMapper.countPubTasksByTaskStatus(userInfo.getUserId(), TaskStatusEnum.DOING.getCode());
+            int endTaskNum = pubTaskMapper.countPubTasksByTaskStatus(userInfo.getUserId(), TaskStatusEnum.END.getCode());
+            resultMap.put("createTaskNum", createTaskNum);
+            resultMap.put("doingTaskNum", doingTaskNum);
+            resultMap.put("endTaskNum", endTaskNum);
+        } else {
+            int unSubmitNum = stuTaskMapper.countStuTasksByTaskStatus(userInfo.getUserId(), SubmitStatusEnum.UNSUBMIT.getCode());
+            int submitNum = stuTaskMapper.countStuTasksByTaskStatus(userInfo.getUserId(), SubmitStatusEnum.SUBMIT.getCode());
+            resultMap.put("unSubmitNum", unSubmitNum);
+            resultMap.put("submitNum", submitNum);
+        }
+        return ResponseData.success(resultMap);
+    }
 
     public ResponseData pubTask(UserInfo userInfo, String taskName, String taskContent) {
         if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode()))

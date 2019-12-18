@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface PubTaskMapper extends Mapper<PubTask> {
 
+    @Select("select count(distinct(task_id)) from pub_task where teacher_id = #{teacherId} and task_status = #{taskStatus} and delete_tag = 0")
+    Integer countPubTasksByTaskStatus(@Param("teacherId") Integer teacherId, @Param("taskStatus") Integer taskStatus);
+
     @Select("select * from pub_task where task_id = #{taskId} and teacher_id = #{teacherId} and delete_tag = 0")
     PubTask getPubTaskByTaskId(@Param("taskId") Integer taskId, @Param("teacherId") Integer teacherId);
 
