@@ -22,6 +22,6 @@ public interface StuTaskMapper extends Mapper<StuTask> {
     Integer countStuTasks(@Param("taskId") Integer taskId);
 
     @Select("select count(distinct(stu_id)) from stu_task where task_id = #{taskId} and has_submitted = #{submitStatus}")
-    Integer countStuTasksByStatus(@Param("taskId") Integer taskId, @Param("hasSubmitted") Integer submitStatus);
+    Integer countStuTasksByStatus(@Param("taskId") Integer taskId, @Param("submitStatus") Integer submitStatus);
 
 }
