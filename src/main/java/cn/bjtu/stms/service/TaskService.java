@@ -30,7 +30,7 @@ public class TaskService {
 
     public ResponseData pubTask(UserInfo userInfo, String taskName, String taskContent) {
         if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode()))
-            return ResponseData.fail("用户信息错误！");
+            return ResponseData.fail("用户无权限或信息错误！");
         PubTask pubTask = new PubTask();
         pubTask.setTaskName(taskName);
         pubTask.setTaskContent(taskContent);
@@ -44,11 +44,12 @@ public class TaskService {
 
     public ResponseData modifyPubTask(UserInfo userInfo, Integer taskId, String taskName, String taskContent) {
         if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode()))
-            return ResponseData.fail("用户信息错误！");
+            return ResponseData.fail("用户无权限或信息错误！");
         if (taskId == null || StringUtil.isEmpty(taskName) || StringUtil.isEmpty(taskContent))
             return ResponseData.fail("任务信息错误！");
-        PubTask pubTask = new PubTask();
-        pubTask.setTaskId(taskId);
+        PubTask pubTask = pubTaskMapper.getPubTaskByTaskId(taskId, userInfo.getUserId());
+        if (pubTask == null)
+            return ResponseData.fail("在该老师任务列表中未查询到此任务！");
         pubTask.setTaskName(taskName);
         pubTask.setTaskContent(taskContent);
 
@@ -58,17 +59,17 @@ public class TaskService {
 
     public ResponseData deletePubTask(UserInfo userInfo, Integer taskId) {
         if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode()))
-            return ResponseData.fail("用户信息错误！");
+            return ResponseData.fail("用户无权限或信息错误！");
         if (taskId == null)
             return ResponseData.fail("任务信息错误！");
         int id = pubTaskMapper.deletePubTaskById(taskId, userInfo.getUserId(), TaskStatusEnum.CREATE.getCode());
         return id > 0 ? ResponseData.success("删除任务成功！") : ResponseData.failParamaters("删除任务失败！");
     }
 
-    public ResponseData getPubTaskById(UserInfo userInfo, Integer taskId) {
-        if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode()))
-            return ResponseData.fail("用户信息错误！");
-        PubTask pubTask = pubTaskMapper.getPubTaskByTaskId(taskId, userInfo.getUserId());
+    public ResponseData getPubTaskById(Integer taskId) {
+        if (taskId == null)
+            return ResponseData.fail("任务信息错误！");
+        PubTask pubTask = pubTaskMapper.selectByPrimaryKey(taskId);
         return pubTask != null ? ResponseData.success(pubTask) : ResponseData.failParamaters("未查询到该任务");
     }
 
@@ -120,6 +121,22 @@ public class TaskService {
         }
         return ResponseData.success();
     }
+
+    public ResponseData remarkTask(UserInfo userInfo, Integer taskId, String remarkText) {
+        if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.TEACHER.getCode()))
+            return ResponseData.fail("用户无权限或信息错误！");
+        if (taskId == null || StringUtil.isEmpty(remarkText))
+            return ResponseData.fail("任务信息错误！");
+
+        PubTask pubTask = pubTaskMapper.getPubTaskByTaskId(taskId, userInfo.getUserId());
+        if (pubTask == null)
+            return ResponseData.fail("在该老师任务列表中未查询到此任务！");
+        pubTask.setRemarkText(remarkText);
+
+        int id = pubTaskMapper.updateByPrimaryKeySelective(pubTask);
+        return id > 0 ? ResponseData.success("点评成功！") : ResponseData.failParamaters("点评失败！");
+    }
+
 
     public ResponseData getPubTaskDetail(Integer taskId, Integer pageNo, Integer pageSize) {
         Integer limit = Pager.getValidPageSize(pageSize, 10);

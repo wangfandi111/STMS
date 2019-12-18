@@ -67,11 +67,9 @@ public class TaskController {
     @ApiImplicitParam(name = "jsonNode", value = "任务id，例：{'taskId':2}",
             required = true, dataType = "string", paramType = "body")
     @PostMapping(value = "/search")
-    public ResponseData getTaskById(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
+    public ResponseData getTaskById(@RequestBody JsonNode jsonNode) {
         Integer taskId = jsonNode.hasNonNull("taskId") ? jsonNode.get("taskId").intValue() : null;
-        HttpSession session = request.getSession(true);
-        UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
-        return taskService.getPubTaskById(userInfo, taskId);
+        return taskService.getPubTaskById( taskId);
     }
 
     @ApiOperation(value = "查询任务列表", notes = "查询任务列表")
@@ -87,23 +85,35 @@ public class TaskController {
     }
 
 
-    @ApiOperation(value = "分配任务", notes = "老师分配任务")
+    @ApiOperation(value = "老师分配任务", notes = "老师分配任务")
     @ApiImplicitParam(name = "jsonNode", value = "任务id与学生id列表，例：{'taskId':1,'student':[15555557,15555557]}",
             required = true, dataType = "string", paramType = "body")
     @PostMapping(value = "/distribute")
     public ResponseData distributeTask(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
         Integer taskId = jsonNode.hasNonNull("taskId") ? jsonNode.get("taskId").intValue() : null;
-        JsonNode studentIds = jsonNode.hasNonNull("student") ? jsonNode.get("student") : null;
+        String studentIds = jsonNode.hasNonNull("student") ? jsonNode.get("student").toString() : null;
         List<Integer> studentIdList = null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            studentIdList = objectMapper.readValue(studentIds.textValue(), new TypeReference<List<Integer>>(){});
+            studentIdList = objectMapper.readValue(studentIds, new TypeReference<List<Integer>>(){});
         } catch (Exception e) {
             return ResponseData.fail("请输入正确的学生学号列表格式");
         }
         HttpSession session = request.getSession(true);
         UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
         return taskService.distributeTask(userInfo, taskId, studentIdList);
+    }
+
+    @ApiOperation(value = "老师点评任务", notes = "老师点评任务")
+    @ApiImplicitParam(name = "jsonNode", value = "任务id与点评信息，例：{'taskId':1,'remarkText':'remark'}",
+            required = true, dataType = "string", paramType = "body")
+    @PostMapping(value = "/remark")
+    public ResponseData remarkTask(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
+        Integer taskId = jsonNode.hasNonNull("taskId") ? jsonNode.get("taskId").intValue() : null;
+        String remarkText = jsonNode.hasNonNull("remarkText") ? jsonNode.get("remarkText").textValue() : null;
+        HttpSession session = request.getSession(true);
+        UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
+        return taskService.remarkTask(userInfo, taskId, remarkText);
     }
 
     @ApiOperation(value = "查询任务详情", notes = "查询任务详情")
