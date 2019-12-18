@@ -5,20 +5,21 @@ import cn.bjtu.stms.constants.TaskStatusEnum;
 import cn.bjtu.stms.constants.UserRoleEnum;
 import cn.bjtu.stms.mapper.PubTaskMapper;
 import cn.bjtu.stms.mapper.StuTaskMapper;
+import cn.bjtu.stms.mapper.UserInfoMapper;
 import cn.bjtu.stms.model.PubTask;
 import cn.bjtu.stms.model.StuTask;
 import cn.bjtu.stms.model.UserInfo;
 import cn.bjtu.stms.model.protocol.Pager;
 import cn.bjtu.stms.model.protocol.ResponseData;
+import cn.bjtu.stms.model.response.PubTaskResponse;
+import cn.bjtu.stms.model.response.StuTaskResponse;
 import cn.bjtu.stms.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -29,6 +30,10 @@ public class TaskService {
 
     @Resource
     private StuTaskMapper stuTaskMapper;
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
+
 
     public ResponseData getTaskStatistics(UserInfo userInfo) {
         if (userInfo == null)
@@ -111,10 +116,14 @@ public class TaskService {
             total = pubTaskMapper.countPubTasksByStudentId(userInfo.getUserId());
             pubTaskList = pubTaskMapper.getPubTaskListByStudentId(userInfo.getUserId(), limit, offset);
         }
+        List<PubTaskResponse> pubTaskResponsesList = new ArrayList<>();
         for (PubTask pubTask : pubTaskList) {
-            pubTask.setTaskStatusDes(TaskStatusEnum.getContentByCode(pubTask.getTaskStatus()));
+            PubTaskResponse pubTaskResponse = new PubTaskResponse();
+            BeanUtils.copyProperties(pubTask, pubTaskResponse);
+            pubTaskResponse.setTaskStatusDes(TaskStatusEnum.getContentByCode(pubTask.getTaskStatus()));
+            pubTaskResponsesList.add(pubTaskResponse);
         }
-        Pager data = new Pager(pubTaskList, pageNo, pageSize, total);
+        Pager data = new Pager(pubTaskResponsesList, pageNo, pageSize, total);
         return ResponseData.success(data);
     }
 
@@ -167,10 +176,16 @@ public class TaskService {
 
         Integer total = stuTaskMapper.countStuTasks(taskId);
         List<StuTask> stuTaskList = stuTaskMapper.getStuTaskList(taskId, limit, offset);
+        List<StuTaskResponse> stuTaskResponseList = new ArrayList<>();
         for (StuTask stuTask : stuTaskList) {
-            stuTask.setHasSubmittedDes(SubmitStatusEnum.getContentByCode(stuTask.getHasSubmitted()));
+            StuTaskResponse stuTaskResponse = new StuTaskResponse();
+            BeanUtils.copyProperties(stuTask, stuTaskResponse);
+            String stuName = userInfoMapper.selectByPrimaryKey(stuTask.getStuId()).getUserName();
+            stuTaskResponse.setStuName(stuName);
+            stuTaskResponse.setHasSubmittedDes(SubmitStatusEnum.getContentByCode(stuTask.getHasSubmitted()));
+            stuTaskResponseList.add(stuTaskResponse);
         }
-        Pager data = new Pager(stuTaskList, pageNo, pageSize, total);
+        Pager data = new Pager(stuTaskResponseList, pageNo, pageSize, total);
         return ResponseData.success(data);
     }
 

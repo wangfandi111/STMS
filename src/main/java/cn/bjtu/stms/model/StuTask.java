@@ -19,8 +19,6 @@ public class StuTask {
     @Column(name = "has_submitted")
     private Integer hasSubmitted;
 
-    private String hasSubmittedDes;
-
     @Column(name = "submit_time")
     private Date submitTime;
 

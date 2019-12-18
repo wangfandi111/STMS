@@ -28,13 +28,10 @@ public class PubTask {
     @Column(name = "task_status")
     private Integer taskStatus;
 
-    private String taskStatusDes;
-
     @Column(name = "teacher_id")
     private Integer teacherId;
 
     @Column(name = "remark_text")
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String remarkText;
 
     @Column(name = "delete_tag")
