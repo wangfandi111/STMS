@@ -3,10 +3,9 @@ package cn.bjtu.stms.controller;
 import cn.bjtu.stms.model.UserInfo;
 import cn.bjtu.stms.model.protocol.ResponseData;
 import cn.bjtu.stms.service.TaskService;
-import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.xdevapi.JsonArray;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,24 +88,45 @@ public class TaskController {
 
 
     @ApiOperation(value = "分配任务", notes = "老师分配任务")
-    @ApiImplicitParam(name = "jsonNode", value = "任务id与学生id列表，例：{'taskId':1,'student':[{'studentId': 15555557},{'studentId': 15555557}]}",
+    @ApiImplicitParam(name = "jsonNode", value = "任务id与学生id列表，例：{'taskId':1,'student':[15555557,15555557]}",
             required = true, dataType = "string", paramType = "body")
     @PostMapping(value = "/distribute")
     public ResponseData distributeTask(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
         Integer taskId = jsonNode.hasNonNull("taskId") ? jsonNode.get("taskId").intValue() : null;
-        JsonNode studentIdListNode = jsonNode.hasNonNull("student") ? jsonNode.get("student") : null;
-        List<Integer> studentIdList = new LinkedList<>();
+        JsonNode studentIds = jsonNode.hasNonNull("student") ? jsonNode.get("student") : null;
+        List<Integer> studentIdList = null;
         try {
-            if (studentIdListNode.isArray()) {
-                for (JsonNode node : studentIdListNode)
-                    studentIdList.add(node.get("studentId").intValue());
-            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            studentIdList = objectMapper.readValue(studentIds.textValue(), new TypeReference<List<Integer>>(){});
         } catch (Exception e) {
             return ResponseData.fail("请输入正确的学生学号列表格式");
         }
         HttpSession session = request.getSession(true);
         UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
         return taskService.distributeTask(userInfo, taskId, studentIdList);
+    }
+
+    @ApiOperation(value = "查询任务详情", notes = "查询任务详情")
+    @ApiImplicitParam(name = "jsonNode", value = "任务id，例：{'taskId':1,'pageNo':1,'pageSize':10}",
+            required = true, dataType = "string", paramType = "body")
+    @PostMapping(value = "/detail")
+    public ResponseData getPubTaskDetail(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
+        Integer taskId = jsonNode.hasNonNull("taskId") ? jsonNode.get("taskId").intValue() : null;
+        Integer pageNo = jsonNode.hasNonNull("pageNo") ? jsonNode.get("pageNo").intValue() : 1;
+        Integer pageSize = jsonNode.hasNonNull("pageSize") ? jsonNode.get("pageSize").intValue() : 10;
+        return taskService.getPubTaskDetail(taskId, pageNo, pageSize);
+    }
+
+    @ApiOperation(value = "学生提交任务", notes = "学生提交任务")
+    @ApiImplicitParam(name = "jsonNode", value = "任务id与学生id列表，例：{'taskId':1,'submitText':'emmmmm'}",
+            required = true, dataType = "string", paramType = "body")
+    @PostMapping(value = "/submit")
+    public ResponseData submitTask(@RequestBody JsonNode jsonNode, HttpServletRequest request) {
+        Integer taskId = jsonNode.hasNonNull("taskId") ? jsonNode.get("taskId").intValue() : null;
+        String submitText = jsonNode.hasNonNull("submitText") ? jsonNode.get("submitText").textValue() : null;
+        HttpSession session = request.getSession(true);
+        UserInfo userInfo = (UserInfo) session.getAttribute("userInfo");
+        return taskService.submitTask(userInfo, taskId, submitText);
     }
 
 }

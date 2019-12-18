@@ -43,9 +43,13 @@ public class UserService {
         }
     }
 
-    public ResponseData getStudentList() {
-        List<UserInfo> userInfoList = userInfoMapper.getUserInfoList(UserRoleEnum.STUDENT.getCode());
-        Pager data = userInfoList != null ? new Pager(userInfoList, 1, userInfoList.size(), userInfoList.size()) : new Pager();
+    public ResponseData getStudentList(Integer pageNo, Integer pageSize) {
+        Integer limit = Pager.getValidPageSize(pageSize, 10);
+        Integer offset = Pager.getOffset(pageNo, pageSize);
+
+        Integer total = userInfoMapper.countUserInfosByRole(UserRoleEnum.STUDENT.getCode());
+        List<UserInfo> userInfoList = userInfoMapper.getUserInfoListByRole(UserRoleEnum.STUDENT.getCode(), limit, offset);
+        Pager data = new Pager(userInfoList, pageNo, pageSize, total) ;
         return ResponseData.success(data);
     }
 

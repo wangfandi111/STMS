@@ -27,6 +27,4 @@ public class StuTask {
     @Column(name = "submit_text")
     private String submitText;
 
-    @Column(name = "remark_text")
-    private String remarkText;
 }

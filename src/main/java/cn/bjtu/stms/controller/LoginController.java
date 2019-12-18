@@ -56,9 +56,13 @@ public class LoginController {
     }
 
     @ApiOperation(value = "学生列表", notes = "学生列表")
+    @ApiImplicitParam(name = "jsonNode", value = "任务id，例：{'pageNo':1,'pageSize':10}",
+            required = false, dataType = "string", paramType = "body")
     @PostMapping(value = "students")
-    public ResponseData getStudentList() {
-        return userService.getStudentList();
+    public ResponseData getStudentList(@RequestBody(required = false) JsonNode jsonNode) {
+        Integer pageNo = jsonNode != null && jsonNode.hasNonNull("pageNo") ? jsonNode.get("pageNo").intValue() : 1;
+        Integer pageSize = jsonNode != null && jsonNode.hasNonNull("pageSize") ? jsonNode.get("pageSize").intValue() : 10;
+        return userService.getStudentList(pageNo, pageSize);
     }
 
 

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -97,7 +98,7 @@ public class TaskService {
         if (userInfo == null)
             return ResponseData.fail("用户信息错误！");
         if (taskId == null || studentIdList == null || studentIdList.isEmpty())
-            return ResponseData.fail("任务信息或学生错误！");
+            return ResponseData.fail("任务信息或学生信息错误！");
 
         PubTask pubTask = pubTaskMapper.getPubTaskByTaskId(taskId, userInfo.getUserId());
         if (pubTask == null)
@@ -115,6 +116,39 @@ public class TaskService {
         }
         if (insertNum > 0 && pubTask.getTaskStatus().equals(TaskStatusEnum.CREATE.getCode())) {
             pubTask.setTaskStatus(TaskStatusEnum.DOING.getCode());
+            pubTaskMapper.updateByPrimaryKeySelective(pubTask);
+        }
+        return ResponseData.success();
+    }
+
+    public ResponseData getPubTaskDetail(Integer taskId, Integer pageNo, Integer pageSize) {
+        Integer limit = Pager.getValidPageSize(pageSize, 10);
+        Integer offset = Pager.getOffset(pageNo, pageSize);
+
+        Integer total = stuTaskMapper.countStuTasks(taskId);
+        List<StuTask> stuTaskList = stuTaskMapper.getStuTaskList(taskId, limit, offset);
+        for (StuTask stuTask : stuTaskList) {
+            stuTask.setHasSubmittedDes(SubmitStatusEnum.getContentByCode(stuTask.getHasSubmitted()));
+        }
+        Pager data = new Pager(stuTaskList, pageNo, pageSize, total);
+        return ResponseData.success(data);
+    }
+
+    public ResponseData submitTask(UserInfo userInfo, Integer taskId, String submitText) {
+        if (userInfo == null || !userInfo.getUserRole().equals(UserRoleEnum.STUDENT.getCode()))
+            return ResponseData.fail("用户信息错误！");
+        if (taskId == null || StringUtil.isEmpty(submitText))
+            return ResponseData.fail("任务信息错误！");
+        StuTask stuTask = stuTaskMapper.getStuTask(taskId, userInfo.getUserId());
+        stuTask.setHasSubmitted(SubmitStatusEnum.SUBMIT.getCode());
+        stuTask.setSubmitText(submitText);
+        stuTask.setSubmitTime(new Date());
+        stuTaskMapper.updateByPrimaryKeySelective(stuTask);
+
+        Integer unSubmitNum = stuTaskMapper.countStuTasksByStatus(taskId, SubmitStatusEnum.UNSUBMIT.getCode());
+        if (unSubmitNum == 0) {
+            PubTask pubTask = pubTaskMapper.selectByPrimaryKey(taskId);
+            pubTask.setTaskStatus(TaskStatusEnum.END.getCode());
             pubTaskMapper.updateByPrimaryKeySelective(pubTask);
         }
         return ResponseData.success();
